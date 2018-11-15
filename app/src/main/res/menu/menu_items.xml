@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+
+   <!-- <item
+        android:id="@+id/navigation_item_1"
+        android:title="Home">
+        <menu>
+
+            <item
+                android:id="@+id/menu_home"
+                android:checkable="true"
+                android:icon="@drawable/m_home"
+                android:title="Home"/>
+
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/navigation_item_2"
+        android:title="Notes">
+        <menu>
+
+            <item
+                android:id="@+id/menu_note"
+                android:checkable="true"
+                android:icon="@drawable/m_note"
+                android:title="Add Note"/>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/navigation_item_3"
+        android:title="Trash">
+        <menu>
+
+            <item
+                android:id="@+id/menu_trash"
+                android:checkable="true"
+                android:icon="@drawable/m_garbage"
+                android:title="Trash"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/navigation_item_4"
+        android:title="Logout">
+        <menu>
+
+            <item
+                android:id="@+id/menu_logout"
+                android:checkable="true"
+                android:icon="@drawable/m_logout"
+                android:title="Trash"/>
+        </menu>
+    </item>
+
+-->
+
+     <group
+        android:id="@+id/group_1"
+        android:checkableBehavior="single">
+         <item
+             android:id="@+id/menu_home"
+             android:checkable="true"
+             android:icon="@drawable/m_home"
+             android:title="Home"/>
+     </group>
+
+    <group
+        android:id="@+id/group_2"
+        android:checkableBehavior="single">
+
+         <item
+             android:id="@+id/menu_note"
+             android:checkable="true"
+             android:icon="@drawable/m_note"
+             android:title="Add Note"/>
+    </group>
+
+    <group
+        android:id="@+id/group_3"
+        android:checkableBehavior="single">
+
+         <item
+             android:id="@+id/menu_trash"
+             android:checkable="true"
+             android:icon="@drawable/m_garbage"
+             android:title="Trash"/>
+    </group>
+
+    <group
+        android:id="@+id/group_4"
+        android:checkableBehavior="single">
+         <item
+             android:id="@+id/menu_logout"
+             android:checkable="true"
+             android:icon="@drawable/m_logout"
+             android:title="Logout"/>
+   </group>
+
+
+
+
+</menu>

@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Syntax</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_splash">SplashActivity</string>
+
+
+    //Drawer Layout
+    <string name="drawer_open"> Open</string>
+    <string name="drawer_close"> Close</string>
+
+
+    <string-array name="category">
+        <item>Groceries</item>
+        <item>Books to Read</item>
+        <item>Video Games To Play</item>
+        <item>Exams to Prepare for</item>
+        <item>Credit Card Expenses</item>
+        <item>Travel</item>
+        <item>Work</item>
+        <item>Family</item>
+        <item>Private</item>
+        <item>Rent to pay</item>
+        <item>EMIs to pay</item>
+
+
+    </string-array>
+</resources>
