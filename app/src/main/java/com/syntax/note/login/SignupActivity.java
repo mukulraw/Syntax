@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,8 @@ public class SignupActivity extends AppCompatActivity {
 
     boolean isValid=false;
 
+    ProgressBar pBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         setUpWidget();
+        pBar.setVisibility(View.GONE);
 
         //Retrofit
 
@@ -66,7 +70,13 @@ public class SignupActivity extends AppCompatActivity {
                 dataValidation();
                 if (isValid)
                 {
-                    signup();
+                    if(syntax_password.equals(syntax_repassword)) {
+                        signup();
+                        pBar.setVisibility(View.VISIBLE);
+                    }else
+                    {
+                        Toast.makeText(SignupActivity.this, "password mismatch", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }
@@ -107,7 +117,7 @@ public class SignupActivity extends AppCompatActivity {
             public void onResponse(Call<signupResponseBean> call, Response<signupResponseBean> response) {
                 if (response.body().getStatus().equals("1"))
                 {
-
+                   pBar.setVisibility(View.GONE);
                     Toast.makeText(SignupActivity.this, ""+response.body().getData().getName(), Toast.LENGTH_SHORT).show();
 
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_id,response.body().getData().getUserId());
@@ -116,12 +126,14 @@ public class SignupActivity extends AppCompatActivity {
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
                     Intent homeIntent = new Intent(SignupActivity.this,HomeActivity.class);
                     startActivity(homeIntent);
+                    finish();
 
                    /* Intent signinIntent = new Intent(SignupActivity.this,SigninActivity.class);
                     startActivity(signinIntent);*/
                 }
                 else
                 {
+                    pBar.setVisibility(View.GONE);
                     Snackbar snackbar = Snackbar.make(rootlayout,"Signup Failed Already Registered",Snackbar.LENGTH_LONG);
                     View snackBarView = snackbar.getView();
                     snackBarView.setBackgroundColor(getResources().getColor(R.color.seaGreen));
@@ -132,6 +144,7 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<signupResponseBean> call, Throwable t) {
+                pBar.setVisibility(View.GONE);
                 Toast.makeText(SignupActivity.this, ""+"failed", Toast.LENGTH_SHORT).show();
 
             }
@@ -159,6 +172,7 @@ public class SignupActivity extends AppCompatActivity {
         inuptLayoutPhone = findViewById(R.id.inuptLayoutPhone);
         inuptLayoutPassword = findViewById(R.id.inuptLayoutPassword);
         inuptLayoutRepassword = findViewById(R.id.inuptLayoutRepassword);
+        pBar = findViewById(R.id.progressBar);
 
 
     }

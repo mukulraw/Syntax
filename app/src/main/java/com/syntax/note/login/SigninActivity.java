@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class SigninActivity extends AppCompatActivity {
     Retrofit retrofit;
     ServiceInterface serviceInterface;
     boolean isValid=false;
+    private ProgressBar pBar;
 
 
     @Override
@@ -48,6 +50,7 @@ public class SigninActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signin);
 
         setUpWidget();
+        pBar.setVisibility(View.GONE);
         getData();
 
         //Retrofit
@@ -67,6 +70,7 @@ public class SigninActivity extends AppCompatActivity {
                 if(isValid)
                 {
                     signin();
+                    pBar.setVisibility(View.VISIBLE);
                 }
 
 
@@ -109,6 +113,7 @@ public class SigninActivity extends AppCompatActivity {
             public void onResponse(Call<signinResponseBean> call, Response<signinResponseBean> response) {
                 if (response.body().getStatus().equals("1"))
                 {
+                    pBar.setVisibility(View.GONE);
                    // Toast.makeText(SigninActivity.this, ""+response.body()
                           //  .getData().getName(), Toast.LENGTH_SHORT).show();
                     Log.i("signin",response.body().getData().getEmail());
@@ -118,9 +123,11 @@ public class SigninActivity extends AppCompatActivity {
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
                     Intent homeIntent = new Intent(SigninActivity.this,HomeActivity.class);
                     startActivity(homeIntent);
+                    finish();
                 }
                 else
                 {
+                    pBar.setVisibility(View.GONE);
                     Snackbar snackbar = Snackbar.make(rootlayout,"Login Failed Check Login Credential",Snackbar.LENGTH_LONG);
                     View snackBarView = snackbar.getView();
                     snackBarView.setBackgroundColor(getResources().getColor(R.color.seaGreen));
@@ -131,6 +138,7 @@ public class SigninActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<signinResponseBean> call, Throwable t) {
+                pBar.setVisibility(View.GONE);
 
             }
         });
@@ -148,6 +156,8 @@ public class SigninActivity extends AppCompatActivity {
         rootlayout = findViewById(R.id.rootlayout);
         inputLayoutSignin = findViewById(R.id.inputLayoutEmail);
         inputLayoutPassword = findViewById(R.id.inputLayoutPassword);
+
+        pBar = (ProgressBar)findViewById(R.id.progressBar);
     }
 
     private void getData() {

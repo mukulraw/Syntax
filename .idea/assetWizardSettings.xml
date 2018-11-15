@@ -14,8 +14,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="m_logout" />
-                            <entry key="sourceFile" value="C:\Users\Manish\Desktop\NoteAppIcon\logout.svg" />
+                            <entry key="outputName" value="m_files" />
+                            <entry key="sourceFile" value="C:\Users\Manish\Desktop\NoteAppIcon\files.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -1,5 +1,7 @@
 package com.syntax.note.note;
 
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,10 +11,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.syntax.note.R;
+import com.syntax.note.addNoteRequestPOJO.addNoteRequestBean;
+import com.syntax.note.addNoteResponsePOJO.addNoteResponseBean;
 import com.syntax.note.categoryRequestPOJO.CategoryRequestBean;
 import com.syntax.note.categoryRequestPOJO.Data;
 import com.syntax.note.categoryResponsePOJO.CategoryResponseBean;
@@ -38,20 +44,49 @@ public class AddNoteActivity extends AppCompatActivity {
     EditText title,desc;
     Button submit;
     String mTitle,mDesc,mCatId;
-    private TextInputLayout inputLayoutTitle,inputLayoutDesc;
+    String mUserId;
+    ConstraintLayout rootlayout;
+  //  private TextInputLayout inputLayoutTitle,inputLayoutDesc;
+    boolean isValid=false;
+    String item;
+    ProgressBar pBar;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_note2);
-        // Toolbar
+        setContentView(R.layout.add_note2);
+        /*// Toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(" Note");
-      //  mToolbar.setNavigationIcon(R.id.back);
+       mToolbar.setNavigationIcon(R.drawable.m_back);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+
+        //back button
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mToolbar.setPadding(10,0,0,0);
+        mToolbar.setTitle("Add Note");
+       // mToolbar.setTitleTextColor(Color.WHITE);
+        mToolbar.setNavigationIcon(R.drawable.m_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // b.mylist.remove(b.mylist.size() - 1);
+
+                finish();
+
+            }
+        });
 
         //Retrofit
         setupWidget();
+        pBar.setVisibility(View.GONE);
         getData();
+
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.BASE_URL)
@@ -66,7 +101,14 @@ public class AddNoteActivity extends AppCompatActivity {
        submit.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               addNoteReq();
+               dataValidation();
+               if (isValid) {
+                   addNoteReq();
+                   pBar.setVisibility(View.VISIBLE);
+               }else
+               {
+                   Toast.makeText(AddNoteActivity.this, "Fill All Details First..", Toast.LENGTH_SHORT).show();
+               }
            }
        });
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -80,7 +122,8 @@ public class AddNoteActivity extends AppCompatActivity {
                                        int position, long id) {
                 int r=position;
                 mCatId =String.valueOf(r+1);
-               // Toast.makeText(AddNoteActivity.this, ""+mCatId, Toast.LENGTH_SHORT).show();
+                 item= String.valueOf( arg0.getItemAtPosition(position));
+               // Toast.makeText(AddNoteActivity.this, ""+item, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -89,7 +132,50 @@ public class AddNoteActivity extends AppCompatActivity {
         });
     }
 
+
+
     private void addNoteReq() {
+        addNoteRequestBean body = new addNoteRequestBean();
+        body.setAction("create_note");
+        com.syntax.note.addNoteRequestPOJO.Data data = new com.syntax.note.addNoteRequestPOJO.Data();
+        data.setCatId(mCatId);
+        data.setTitle(mTitle);
+        data.setDesc(mDesc);
+        data.setUserId(mUserId);
+        body.setData(data);
+
+
+        Call<addNoteResponseBean> call = serviceInterface.addNote(body);
+        call.enqueue(new Callback<addNoteResponseBean>() {
+            @Override
+            public void onResponse(Call<addNoteResponseBean> call, Response<addNoteResponseBean> response) {
+                if (response.body().getStatus().equals("1"))
+                {
+                    pBar.setVisibility(View.GONE);
+                    Snackbar snackbar = Snackbar.make(rootlayout,""+response.body().getMessage(),Snackbar.LENGTH_LONG);
+                    View snackBarView = snackbar.getView();
+                    snackBarView.setBackgroundColor(getResources().getColor(R.color.seaGreen));
+                    snackbar.show();
+                    title.setText("");
+                    desc.setText("");
+                }
+                else
+                {
+                    pBar.setVisibility(View.GONE);
+                    Snackbar snackbar = Snackbar.make(rootlayout,""+response.body().getMessage(),Snackbar.LENGTH_LONG);
+                    View snackBarView = snackbar.getView();
+                    snackBarView.setBackgroundColor(getResources().getColor(R.color.seaGreen));
+                    snackbar.show();
+
+                    }
+            }
+
+            @Override
+            public void onFailure(Call<addNoteResponseBean> call, Throwable t) {
+                pBar.setVisibility(View.GONE);
+
+            }
+        });
     }
 
 
@@ -99,7 +185,7 @@ public class AddNoteActivity extends AppCompatActivity {
         body.setAction("category_list");
         Data data = new Data();
 
-        String a= SharePreferenceUtils.getInstance().getString(Constant.USER_id);
+         mUserId= SharePreferenceUtils.getInstance().getString(Constant.USER_id);
 
         data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
       //  Toast.makeText(this, ""+a, Toast.LENGTH_SHORT).show();
@@ -127,7 +213,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<CategoryResponseBean> call, Throwable t) {
-                Toast.makeText(AddNoteActivity.this, "fail", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddNoteActivity.this, "api response fail"+t, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -139,9 +225,12 @@ public class AddNoteActivity extends AppCompatActivity {
     private void setupWidget() {
         title = findViewById(R.id.title_text);
         desc = findViewById(R.id.desc);
-        inputLayoutTitle = findViewById(R.id.inputLayoutTitle);
-        inputLayoutDesc = findViewById(R.id.inputLayoutDesc);
+       // inputLayoutTitle = findViewById(R.id.inputLayoutTitle);
+       // inputLayoutDesc = findViewById(R.id.inputLayoutDesc);
         submit = findViewById(R.id.submit);
+        rootlayout = findViewById(R.id.rootlayout);
+        pBar = (ProgressBar)findViewById(R.id.progressBar);
+
 
     }
 
@@ -150,6 +239,23 @@ public class AddNoteActivity extends AppCompatActivity {
         mDesc =desc.getText().toString().trim();
     }
 
+    private void dataValidation() {
+        isValid = true;
 
+        if (title.getText().toString().isEmpty()) {
+           // title.setError("Title Missing");
+            isValid = false;
+        } else {
+            //inputLayoutTitle.setErrorEnabled(false);
+        }
+        if (desc.getText().toString().isEmpty()) {
+           // inputLayoutDesc.setError("Description Missing");
+            isValid = false;
+        } else {
+           // inputLayoutDesc.setErrorEnabled(false);
+        }
+
+
+    }
 
 }

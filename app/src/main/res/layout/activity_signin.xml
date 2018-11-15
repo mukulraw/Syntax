@@ -25,29 +25,40 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/logosyntex"/>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                 />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/inputLayoutEmail"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="70dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/signin_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
                     android:hint="Enter Email id"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/inputLayoutPassword"
                 android:layout_marginTop="20dp"
+                app:passwordToggleEnabled="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/signin_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter password"/>
+                    android:hint="Enter password"
+                    android:inputType="textPassword"/>
             </android.support.design.widget.TextInputLayout>
 
             <Button

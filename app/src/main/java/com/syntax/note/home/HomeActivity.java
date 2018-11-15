@@ -1,18 +1,23 @@
 package com.syntax.note.home;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.syntax.note.MyApplication;
 import com.syntax.note.R;
 import com.syntax.note.login.SigninActivity;
 import com.syntax.note.note.AddNoteActivity;
@@ -24,6 +29,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     // Drawer Layout
     private DrawerLayout mDrawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
+    FloatingActionButton fab;
+    AlertDialog.Builder builder1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +41,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(" Note");
 
+        //fab button
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent addNoteIntent = new Intent(HomeActivity.this,AddNoteActivity.class);
+                startActivity(addNoteIntent);
+            }
+        });
+
         String userid=SharePreferenceUtils.getInstance().getString(Constant.USER_id);
-        Toast.makeText(this, ""+userid, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, ""+userid, Toast.LENGTH_SHORT).show();
 
        //DrawerLayout
         @SuppressLint("CutPasteId")
@@ -46,6 +63,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+
 
     }
 
@@ -65,7 +84,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.menu_note:
                 Intent addNoteIntent = new Intent(HomeActivity.this,AddNoteActivity.class);
                 startActivity(addNoteIntent);
-                finish();
                 break;
             case R.id.menu_trash:
                /* SharePreferenceUtils.getInstance().deletePref();
@@ -74,6 +92,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 finish();*/
                 break;
             case R.id.menu_logout:
+
                 SharePreferenceUtils.getInstance().deletePref();
                 Intent signIntent = new Intent(HomeActivity.this, SigninActivity.class);
                 startActivity(signIntent);
