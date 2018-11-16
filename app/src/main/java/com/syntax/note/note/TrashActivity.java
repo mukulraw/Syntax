@@ -54,7 +54,7 @@ public class TrashActivity extends AppCompatActivity {
         });
 
         userId = SharePreferenceUtils.getInstance().getString(Constant.USER_id);
-        Toast.makeText(this, "" + userId, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "" + userId, Toast.LENGTH_SHORT).show();
         Log.i("userid", userId);
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.BASE_URL)
@@ -75,7 +75,7 @@ public class TrashActivity extends AppCompatActivity {
         Data data = new Data();
         body.setAction("trash_list");
 
-        data.setUserId("24");
+        data.setUserId(userId);
 
         body.setData(data);
 

@@ -94,7 +94,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                Intent trashIntent = new Intent(HomeActivity.this,TrashActivity.class);
                startActivity(trashIntent);
-                Toast.makeText(this, "clicked Trash", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_logout:
 
