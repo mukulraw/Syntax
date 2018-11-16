@@ -13,6 +13,8 @@ import com.syntax.note.signinRequestPOJO.signinRequestBean;
 import com.syntax.note.signinResponsePOJO.signinResponseBean;
 import com.syntax.note.signupRequestPOJO.signupRequestBean;
 import com.syntax.note.signupResponsePOJO.signupResponseBean;
+import com.syntax.note.trashRequestPOJO.TrashRequestBean;
+import com.syntax.note.trashResponsePOJO.TrashResponseBean;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -57,5 +59,11 @@ public interface ServiceInterface {
   @POST("api/api.php")
   Call<addNoteResponseBean> addNote
           (@Body addNoteRequestBean body);
+
+  //Trash
+  @Headers({"Content-Type: application/json"})
+  @POST("api/api.php")
+  Call<TrashResponseBean> trash
+          (@Body TrashRequestBean body);
 
 }

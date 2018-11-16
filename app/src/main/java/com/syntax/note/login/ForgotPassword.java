@@ -1,5 +1,6 @@
 package com.syntax.note.login;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -74,7 +75,13 @@ public class ForgotPassword extends AppCompatActivity {
             public void onResponse(Call<ForgotpassResponseBean> call, Response<ForgotpassResponseBean> response) {
                 if (response.body().getStatus().equals("1"))
                 {
+
                     Toast.makeText(ForgotPassword.this, "mail send on  "+response.body().getData().getEmail(), Toast.LENGTH_SHORT).show();
+
+                    Intent signinIntent =new Intent(ForgotPassword.this,SigninActivity.class);
+                    startActivity(signinIntent);
+                    finish();
+
                 }
             }
 

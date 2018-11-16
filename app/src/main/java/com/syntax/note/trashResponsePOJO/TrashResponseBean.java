@@ -1,17 +1,11 @@
-package com.syntax.note.categoryResponsePOJO;
+package com.syntax.note.trashResponsePOJO;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class CategoryResponseBean {
-
-
-
-
-    //
-
+public class TrashResponseBean {
     @SerializedName("message")
     @Expose
     private String message;
@@ -20,7 +14,7 @@ public class CategoryResponseBean {
     private String status;
     @SerializedName("data")
     @Expose
-    private List<Data> data = null;
+    private List<Datum> data = null;
 
     public String getMessage() {
         return message;
@@ -38,11 +32,11 @@ public class CategoryResponseBean {
         this.status = status;
     }
 
-    public List<Data> getData() {
+    public List<Datum> getData() {
         return data;
     }
 
-    public void setData(List<Data> data) {
+    public void setData(List<Datum> data) {
         this.data = data;
     }
 }

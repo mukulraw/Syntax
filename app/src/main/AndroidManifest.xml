@@ -11,18 +11,8 @@
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme2">
-        <activity
-            android:name=".Splash"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".Addnote" />
-        <activity android:name=".Addnotelist" />
-        <activity android:name=".Traashlist" />
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+        android:theme="@style/AppTheme2"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".splash.SplashActivity"
             android:screenOrientation="portrait"
@@ -36,21 +26,20 @@
         <activity
             android:name=".home.HomeActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".note.AddNoteActivity"
-          android:parentActivityName=".home.HomeActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".login.SigninActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".login.SignupActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".login.ForgotPassword"
-            android:screenOrientation="portrait">
-
-        </activity>
+        <activity
+            android:name=".note.AddNoteActivity"
+            android:parentActivityName=".home.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".login.SigninActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".login.SignupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".login.ForgotPassword"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".note.TrashActivity"></activity>
     </application>
 
 </manifest>

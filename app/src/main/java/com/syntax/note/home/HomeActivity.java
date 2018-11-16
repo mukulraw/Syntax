@@ -21,6 +21,7 @@ import com.syntax.note.MyApplication;
 import com.syntax.note.R;
 import com.syntax.note.login.SigninActivity;
 import com.syntax.note.note.AddNoteActivity;
+import com.syntax.note.note.TrashActivity;
 import com.syntax.note.utility.Constant;
 import com.syntax.note.utility.SharePreferenceUtils;
 
@@ -90,6 +91,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent signIntent = new Intent(HomeActivity.this, SigninActivity.class);
                 startActivity(signIntent);
                 finish();*/
+
+               Intent trashIntent = new Intent(HomeActivity.this,TrashActivity.class);
+               startActivity(trashIntent);
+                Toast.makeText(this, "clicked Trash", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_logout:
 
