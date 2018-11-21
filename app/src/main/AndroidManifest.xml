@@ -38,8 +38,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".login.ForgotPassword"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".note.TrashActivity"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".note.TrashActivity" />
+        <activity android:name=".SingleNote" />
+        <activity android:name=".Search" />
+        <activity android:name=".TrashDetails"></activity>
     </application>
 
 </manifest>
