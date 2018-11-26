@@ -8,6 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +19,8 @@ import com.syntax.note.allNoteResponsePOJO.allNoteResponseBean;
 import com.syntax.note.deleteNoteRequestPOJO.Data;
 import com.syntax.note.deleteNoteRequestPOJO.deleteNoteRequestBean;
 import com.syntax.note.home.HomeActivity;
+import com.syntax.note.searchResultPOJO.searchResultBean;
+import com.syntax.note.updateNoteRequestPOJO.updateNoteRequestBean;
 import com.syntax.note.utility.Constant;
 import com.syntax.note.utility.SharePreferenceUtils;
 import com.syntax.note.webServices.ServiceInterface;
@@ -29,10 +34,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SingleNote extends AppCompatActivity {
 
     Toolbar toolbar;
-    TextView note;
+    EditText note;
     ProgressBar progress;
-
+    Button update;
     String id;
+    String catId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +46,12 @@ public class SingleNote extends AppCompatActivity {
         setContentView(R.layout.activity_single_note);
 
         id = getIntent().getStringExtra("id");
+        catId = getIntent().getStringExtra("catid");
 
         toolbar = findViewById(R.id.toolbar2);
         note = findViewById(R.id.note);
         progress = findViewById(R.id.progressBar2);
+        update = findViewById(R.id.button);
 
 
         setSupportActionBar(toolbar);
@@ -58,6 +66,64 @@ public class SingleNote extends AppCompatActivity {
         });
 
         note.setText(getIntent().getStringExtra("note"));
+
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                String n = note.getText().toString();
+
+                if (n.length() > 0) {
+
+                    progress.setVisibility(View.VISIBLE);
+
+                    updateNoteRequestBean body = new updateNoteRequestBean();
+
+                    body.setAction("edit_note");
+                    com.syntax.note.updateNoteRequestPOJO.Data data = new com.syntax.note.updateNoteRequestPOJO.Data();
+
+                    data.setCatId(catId);
+                    data.setDescription(n);
+                    data.setNoteId(id);
+                    data.setTitle(getIntent().getStringExtra("title"));
+                    data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
+                    body.setData(data);
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(Constant.BASE_URL)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+
+                    ServiceInterface serviceInterface = retrofit.create(ServiceInterface.class);
+
+                    Call<searchResultBean> call = serviceInterface.update(body);
+
+                    call.enqueue(new Callback<searchResultBean>() {
+                        @Override
+                        public void onResponse(Call<searchResultBean> call, Response<searchResultBean> response) {
+
+                            if (response.body().getStatus().equals("1"))
+                            {
+                                Toast.makeText(SingleNote.this , response.body().getMessage() , Toast.LENGTH_SHORT).show();
+                            }
+
+                            progress.setVisibility(View.GONE);
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<searchResultBean> call, Throwable t) {
+                            progress.setVisibility(View.GONE);
+                        }
+                    });
+
+
+                }
+
+
+            }
+        });
 
     }
 

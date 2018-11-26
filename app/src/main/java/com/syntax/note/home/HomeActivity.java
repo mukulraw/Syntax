@@ -158,7 +158,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.menu_home:
               /*  Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);
                 startActivity(profileIntent);*/
-                Toast.makeText(this, "clicked home", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "clicked home", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_note:
                 Intent addNoteIntent = new Intent(HomeActivity.this, AddNoteActivity.class);
@@ -347,6 +347,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     Intent intent = new Intent(context , SingleNote.class);
                     intent.putExtra("note" , item.getDesc());
                     intent.putExtra("id" , item.getId());
+                    intent.putExtra("catid" , item.getCatId());
                     intent.putExtra("title" , item.getTitle());
                     context.startActivity(intent);
                 }

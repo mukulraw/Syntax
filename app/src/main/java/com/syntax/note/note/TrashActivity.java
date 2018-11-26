@@ -14,11 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.syntax.note.R;
-import com.syntax.note.SingleNote;
 import com.syntax.note.TrashDetails;
 import com.syntax.note.trashRequestPOJO.Data;
 import com.syntax.note.trashRequestPOJO.TrashRequestBean;

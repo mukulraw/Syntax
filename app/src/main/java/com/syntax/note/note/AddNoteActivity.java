@@ -167,6 +167,7 @@ public class AddNoteActivity extends AppCompatActivity {
                     snackbar.show();
                     title.setText("");
                     desc.setText("");
+                    finish();
                 } else {
                     pBar.setVisibility(View.GONE);
                     Snackbar snackbar = Snackbar.make(rootlayout, "" + response.body().getMessage(), Snackbar.LENGTH_LONG);
