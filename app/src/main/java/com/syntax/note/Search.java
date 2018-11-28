@@ -76,8 +76,7 @@ public class Search extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
 
-                if (i == EditorInfo.IME_ACTION_SEARCH)
-                {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
 
                     searchQuery(textView.getText().toString());
 
@@ -193,9 +192,10 @@ public class Search extends AppCompatActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, TrashDetails.class);
+                    Intent intent = new Intent(context, SingleNote.class);
                     intent.putExtra("note", item.getDescription());
                     intent.putExtra("id", item.getId());
+                    intent.putExtra("catid", item.getCatId());
                     intent.putExtra("title", item.getTitle());
                     context.startActivity(intent);
                 }
