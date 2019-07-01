@@ -2,28 +2,33 @@ package com.syntax.note;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.syntax.note.allNoteResponsePOJO.allNoteResponseBean;
+import com.syntax.note.categoryRequestPOJO.CategoryRequestBean;
+import com.syntax.note.categoryResponsePOJO.CategoryResponseBean;
 import com.syntax.note.deleteNoteRequestPOJO.Data;
 import com.syntax.note.deleteNoteRequestPOJO.deleteNoteRequestBean;
-import com.syntax.note.home.HomeActivity;
+import com.syntax.note.note.AddNoteActivity;
 import com.syntax.note.searchResultPOJO.searchResultBean;
 import com.syntax.note.updateNoteRequestPOJO.updateNoteRequestBean;
 import com.syntax.note.utility.Constant;
 import com.syntax.note.utility.SharePreferenceUtils;
 import com.syntax.note.webServices.ServiceInterface;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,25 +39,43 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SingleNote extends AppCompatActivity {
 
     Toolbar toolbar;
-    EditText note;
+    EditText note , title;
     ProgressBar progress;
     Button update;
     String id;
-    String catId;
+    String cat1 , cat;
+    Spinner spinCategory;
+    Retrofit retrofit;
+    ServiceInterface serviceInterface;
+
+    ArrayList<String> catId = new ArrayList<>();
+    ArrayList<String> catName = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_note);
 
+        catId = new ArrayList<>();
+        catName = new ArrayList<>();
+
+
         id = getIntent().getStringExtra("id");
-        catId = getIntent().getStringExtra("catid");
+        cat1 = getIntent().getStringExtra("catid");
 
-        toolbar = findViewById(R.id.toolbar2);
-        note = findViewById(R.id.note);
-        progress = findViewById(R.id.progressBar2);
-        update = findViewById(R.id.button);
+        toolbar = findViewById(R.id.toolbar);
+        note = findViewById(R.id.desc);
+        spinCategory = findViewById(R.id.spinCategory);
+        progress = findViewById(R.id.progressBar);
+        update = findViewById(R.id.submit);
+        title = findViewById(R.id.title_text);
 
+        retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        serviceInterface = retrofit.create(ServiceInterface.class);
 
         setSupportActionBar(toolbar);
         toolbar.setTitle(getIntent().getStringExtra("title"));
@@ -66,6 +89,7 @@ public class SingleNote extends AppCompatActivity {
         });
 
         note.setText(getIntent().getStringExtra("note"));
+        title.setText(getIntent().getStringExtra("title"));
 
         update.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,10 +107,10 @@ public class SingleNote extends AppCompatActivity {
                     body.setAction("edit_note");
                     com.syntax.note.updateNoteRequestPOJO.Data data = new com.syntax.note.updateNoteRequestPOJO.Data();
 
-                    data.setCatId(catId);
+                    data.setCatId(cat);
                     data.setDescription(n);
                     data.setNoteId(id);
-                    data.setTitle(getIntent().getStringExtra("title"));
+                    data.setTitle(title.getText().toString());
                     data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
                     body.setData(data);
                     Retrofit retrofit = new Retrofit.Builder()
@@ -122,6 +146,23 @@ public class SingleNote extends AppCompatActivity {
                 }
 
 
+            }
+        });
+
+        getCategory();
+
+        spinCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int position, long id) {
+
+                cat = catId.get(position);
+
+                // Toast.makeText(AddNoteActivity.this, ""+item, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
 
@@ -193,6 +234,62 @@ public class SingleNote extends AppCompatActivity {
             @Override
             public void onFailure(Call<allNoteResponseBean> call, Throwable t) {
                 progress.setVisibility(View.GONE);
+            }
+        });
+
+
+    }
+
+    private void getCategory() {
+
+        CategoryRequestBean body = new CategoryRequestBean();
+        body.setAction("category_list");
+        com.syntax.note.categoryRequestPOJO.Data data = new com.syntax.note.categoryRequestPOJO.Data();
+
+
+        data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
+        //  Toast.makeText(this, ""+a, Toast.LENGTH_SHORT).show();
+        body.setData(data);
+
+        Call<CategoryResponseBean> call = serviceInterface.getCategory(body);
+        call.enqueue(new Callback<CategoryResponseBean>() {
+            @Override
+            public void onResponse(Call<CategoryResponseBean> call, Response<CategoryResponseBean> response) {
+                assert response.body() != null;
+                if (response.body().getStatus().equals("1")) {
+
+                    catId.clear();
+                    catName.clear();
+
+                    for (int i = 0; i < response.body().getData().size(); i++) {
+                        catId.add(response.body().getData().get(i).getId());
+                        catName.add(response.body().getData().get(i).getCatName());
+                    }
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(SingleNote.this,
+                            android.R.layout.simple_spinner_item, catName);//setting the country_array to spinner
+                    // string value
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinCategory.setAdapter(adapter);
+
+
+                    for (int i = 0; i < response.body().getData().size(); i++) {
+
+                        if (response.body().getData().get(i).getId().equals(cat1))
+                        {
+                            spinCategory.setSelection(i);
+                        }
+
+                    }
+
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<CategoryResponseBean> call, Throwable t) {
+                Toast.makeText(SingleNote.this, "api response fail" + t, Toast.LENGTH_SHORT).show();
             }
         });
 

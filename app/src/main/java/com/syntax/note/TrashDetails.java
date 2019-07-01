@@ -1,13 +1,13 @@
 package com.syntax.note;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class TrashDetails extends AppCompatActivity {
 
     Toolbar toolbar;
-    TextView note;
+    EditText note , title , cat;
     ProgressBar progress;
 
     String id;
@@ -45,6 +45,8 @@ public class TrashDetails extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar2);
         note = findViewById(R.id.note);
+        cat = findViewById(R.id.cat);
+        title = findViewById(R.id.title_text);
         progress = findViewById(R.id.progressBar2);
 
 
@@ -60,6 +62,8 @@ public class TrashDetails extends AppCompatActivity {
         });
 
         note.setText(getIntent().getStringExtra("note"));
+        title.setText(getIntent().getStringExtra("title"));
+        cat.setText(getIntent().getStringExtra("cat"));
 
 
     }

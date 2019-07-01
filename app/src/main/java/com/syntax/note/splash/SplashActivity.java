@@ -1,13 +1,12 @@
 package com.syntax.note.splash;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.syntax.note.R;
 import com.syntax.note.home.HomeActivity;
 import com.syntax.note.login.SigninActivity;
-import com.syntax.note.login.SignupActivity;
 import com.syntax.note.utility.Constant;
 import com.syntax.note.utility.SharePreferenceUtils;
 

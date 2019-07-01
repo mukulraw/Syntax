@@ -6,15 +6,18 @@ import com.syntax.note.addNoteResponsePOJO.addNoteResponseBean;
 import com.syntax.note.allNoteResponsePOJO.allNoteResponseBean;
 import com.syntax.note.categoryRequestPOJO.CategoryRequestBean;
 import com.syntax.note.categoryResponsePOJO.CategoryResponseBean;
+import com.syntax.note.changePasswordPOJO.changePasswordBean;
 import com.syntax.note.deleteNoteRequestPOJO.deleteNoteRequestBean;
 import com.syntax.note.forgotpassRequestPOJO.ForgotpassRequestBean;
 import com.syntax.note.forgotpassResponsePOJO.ForgotpassResponseBean;
+import com.syntax.note.multiDeletePOJO.multiDeleteBean;
 import com.syntax.note.searchRequestPOJO.searchRequestBean;
 import com.syntax.note.searchResultPOJO.searchResultBean;
 import com.syntax.note.signinRequestPOJO.signinRequestBean;
 import com.syntax.note.signinResponsePOJO.signinResponseBean;
 import com.syntax.note.signupRequestPOJO.signupRequestBean;
 import com.syntax.note.signupResponsePOJO.signupResponseBean;
+import com.syntax.note.socialRequestPOJO.socialRequestBean;
 import com.syntax.note.trashRequestPOJO.TrashRequestBean;
 import com.syntax.note.trashResponsePOJO.TrashResponseBean;
 import com.syntax.note.updateNoteRequestPOJO.updateNoteRequestBean;
@@ -43,7 +46,21 @@ public interface ServiceInterface {
     Call<signinResponseBean>
     signin(@Body signinRequestBean body);
 
+    @Headers({"Content-Type: application/json"})
+    @POST("api/api.php")
+    Call<signinResponseBean>
+    socialsignin(@Body socialRequestBean body);
+
+    @Headers({"Content-Type: application/json"})
+    @POST("api/api.php")
+    Call<signinResponseBean>
+    resetPassword(@Body changePasswordBean body);
     // forgotPassword
+
+    @Headers({"Content-Type: application/json"})
+    @POST("api/api.php")
+    Call<signinResponseBean>
+    multiDelete(@Body multiDeleteBean body);
 
     @Headers({"Content-Type: application/json"})
     @POST("api/api.php")

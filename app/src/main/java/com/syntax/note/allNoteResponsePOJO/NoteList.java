@@ -22,6 +22,9 @@ public class NoteList {
     @SerializedName("createDate")
     @Expose
     private String createDate;
+    @SerializedName("check")
+    @Expose
+    private boolean check;
 
     public String getId() {
         return id;
@@ -69,5 +72,13 @@ public class NoteList {
 
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
+    }
+
+    public boolean getCheck() {
+        return check;
+    }
+
+    public void setCheck(boolean check) {
+        this.check = check;
     }
 }

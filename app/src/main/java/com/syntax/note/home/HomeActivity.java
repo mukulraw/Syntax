@@ -2,47 +2,49 @@ package com.syntax.note.home;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
-import com.syntax.note.MyApplication;
+import com.syntax.note.Profile;
 import com.syntax.note.R;
 import com.syntax.note.Search;
 import com.syntax.note.SingleNote;
 import com.syntax.note.allNoteResponsePOJO.Datum;
 import com.syntax.note.allNoteResponsePOJO.NoteList;
 import com.syntax.note.allNoteResponsePOJO.allNoteResponseBean;
-import com.syntax.note.login.SigninActivity;
-import com.syntax.note.model.Note;
+import com.syntax.note.multiDeletePOJO.multiDeleteBean;
 import com.syntax.note.note.AddNoteActivity;
 import com.syntax.note.note.TrashActivity;
+import com.syntax.note.signinResponsePOJO.signinResponseBean;
 import com.syntax.note.trashRequestPOJO.Data;
 import com.syntax.note.trashRequestPOJO.TrashRequestBean;
-import com.syntax.note.trashResponsePOJO.TrashResponseBean;
 import com.syntax.note.utility.Constant;
 import com.syntax.note.utility.SharePreferenceUtils;
 import com.syntax.note.webServices.ServiceInterface;
@@ -71,12 +73,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     List<Datum> list;
     HomeAdapter adapter;
 
+    Button deleteButton;
+
+
+
+    List<String> delete;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         list = new ArrayList<>();
+        delete = new ArrayList<>();
 
         // Toolbar
         Toolbar mToolbar = findViewById(R.id.toolbar);
@@ -85,14 +94,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(mToolbar);
 
         //fab button
-        fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent addNoteIntent = new Intent(HomeActivity.this, AddNoteActivity.class);
-                startActivity(addNoteIntent);
-            }
-        });
 
 
         // Toast.makeText(this, ""+userid, Toast.LENGTH_SHORT).show();
@@ -110,7 +111,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         grid = findViewById(R.id.grid);
         swipe = findViewById(R.id.swipe);
-
+        deleteButton = findViewById(R.id.delete);
         adapter = new HomeAdapter(this, list);
         manager = new GridLayoutManager(this, 1);
         grid.setAdapter(adapter);
@@ -138,6 +139,52 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         swipe.setColorSchemeResources(R.color.colorAccent);
 
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                swipe.setRefreshing(true);
+
+                String deletess = TextUtils.join(",", delete);
+
+                Log.d("delete" , deletess);
+
+                multiDeleteBean body = new multiDeleteBean();
+
+
+                com.syntax.note.multiDeletePOJO.Data data = new com.syntax.note.multiDeletePOJO.Data();
+
+                data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
+                data.setNoteId(deletess);
+
+                body.setAction("delete_multiple_note");
+                body.setData(data);
+
+                Call<signinResponseBean> call = serviceInterface.multiDelete(body);
+
+                call.enqueue(new Callback<signinResponseBean>() {
+                    @Override
+                    public void onResponse(Call<signinResponseBean> call, Response<signinResponseBean> response) {
+
+                        Toast.makeText(HomeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                        swipe.setRefreshing(false);
+
+                        loadData();
+                    }
+
+                    @Override
+                    public void onFailure(Call<signinResponseBean> call, Throwable t) {
+                        swipe.setRefreshing(false);
+                    }
+                });
+
+
+
+            }
+        });
+
+        loadData();
 
     }
 
@@ -173,12 +220,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent trashIntent = new Intent(HomeActivity.this, TrashActivity.class);
                 startActivity(trashIntent);
                 break;
-            case R.id.menu_logout:
-
-                SharePreferenceUtils.getInstance().deletePref();
-                Intent signIntent = new Intent(HomeActivity.this, SigninActivity.class);
+            case R.id.profile:
+                Intent signIntent = new Intent(HomeActivity.this, Profile.class);
                 startActivity(signIntent);
-                finish();
                 break;
         }
 
@@ -205,7 +249,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void loadData() {
 
+        deleteButton.setVisibility(View.GONE);
+
         swipe.setRefreshing(true);
+
+        delete.clear();
 
         TrashRequestBean body = new TrashRequestBean();
         Data data = new Data();
@@ -262,8 +310,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.home_list_item1 , parent , false);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.home_list_item1, parent, false);
             return new ViewHolder(view);
         }
 
@@ -274,7 +322,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             holder.title.setText(item.getCatName());
 
-            holder.adapter2.setGridData(item.getNoteList());
+            List<NoteList> ll = new ArrayList<>();
+
+            for (int i = 0; i < item.getNoteList().size(); i++) {
+
+                NoteList n = new NoteList();
+                n.setCatId(item.getNoteList().get(i).getCatId());
+                n.setCatName(item.getNoteList().get(i).getCatName());
+                n.setCreateDate(item.getNoteList().get(i).getCreateDate());
+                n.setDesc(item.getNoteList().get(i).getDesc());
+                n.setId(item.getNoteList().get(i).getId());
+                n.setTitle(item.getNoteList().get(i).getTitle());
+                n.setCheck(false);
+
+                ll.add(n);
+
+            }
+
+            holder.adapter2.setGridData(ll);
 
         }
 
@@ -292,14 +357,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             List<NoteList> list;
 
 
-            public ViewHolder(View itemView) {
+            ViewHolder(View itemView) {
                 super(itemView);
                 list = new ArrayList<>();
                 title = itemView.findViewById(R.id.textView4);
                 grid = itemView.findViewById(R.id.grid);
 
-                manager = new LinearLayoutManager(context , LinearLayoutManager.HORIZONTAL , false);
-                adapter2 = new HomeAdapter2(context , list);
+                manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                adapter2 = new HomeAdapter2(context, list);
                 grid.setAdapter(adapter2);
                 grid.setLayoutManager(manager);
 
@@ -309,19 +374,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    class HomeAdapter2 extends RecyclerView.Adapter<HomeAdapter2.ViewHolder>
-    {
+    class HomeAdapter2 extends RecyclerView.Adapter<HomeAdapter2.ViewHolder> {
         Context context;
         List<NoteList> list;
 
-        HomeAdapter2(Context context , List<NoteList> list)
-        {
+        HomeAdapter2(Context context, List<NoteList> list) {
             this.context = context;
             this.list = list;
         }
 
-        void setGridData(List<NoteList> list)
-        {
+        void setGridData(List<NoteList> list) {
             this.list = list;
             notifyDataSetChanged();
         }
@@ -329,8 +391,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.home_list_item2 , parent , false);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.home_list_item2, parent, false);
             return new ViewHolder(view);
         }
 
@@ -341,14 +403,48 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             holder.title.setText(item.getTitle());
             holder.note.setText(item.getDesc());
 
+
+            holder.check.setChecked(item.getCheck());
+
+
+            holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                    if (b) {
+                        delete.add(item.getId());
+                        item.setCheck(true);
+                        if (delete.size() > 0) {
+                            deleteButton.setVisibility(View.VISIBLE);
+                        } else {
+                            deleteButton.setVisibility(View.GONE);
+                        }
+                    } else {
+                        delete.remove(item.getId());
+                        item.setCheck(false);
+
+                        if (delete.size() > 0) {
+                            deleteButton.setVisibility(View.VISIBLE);
+                        } else {
+                            deleteButton.setVisibility(View.GONE);
+                        }
+
+                    }
+
+                }
+            });
+
+
+            holder.date.setText(item.getCreateDate());
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context , SingleNote.class);
-                    intent.putExtra("note" , item.getDesc());
-                    intent.putExtra("id" , item.getId());
-                    intent.putExtra("catid" , item.getCatId());
-                    intent.putExtra("title" , item.getTitle());
+                    Intent intent = new Intent(context, SingleNote.class);
+                    intent.putExtra("note", item.getDesc());
+                    intent.putExtra("id", item.getId());
+                    intent.putExtra("catid", item.getCatId());
+                    intent.putExtra("title", item.getTitle());
                     context.startActivity(intent);
                 }
             });
@@ -360,16 +456,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             return list.size();
         }
 
-        class ViewHolder extends RecyclerView.ViewHolder
-        {
+        class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView title , note;
+            TextView title, note, date;
+            CheckBox check;
 
             public ViewHolder(View itemView) {
                 super(itemView);
 
                 title = itemView.findViewById(R.id.textView5);
                 note = itemView.findViewById(R.id.textView6);
+                date = itemView.findViewById(R.id.textView9);
+                check = itemView.findViewById(R.id.checkBox);
 
             }
         }
@@ -389,11 +487,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         int id = item.getItemId();
 
-        if (id == R.id.search)
-        {
+        if (id == R.id.search) {
 
-            Intent intent = new Intent(HomeActivity.this , Search.class);
+            Intent intent = new Intent(HomeActivity.this, Search.class);
             startActivity(intent);
+
+        } else if (id == R.id.add) {
+
+            Intent addNoteIntent = new Intent(HomeActivity.this, AddNoteActivity.class);
+            startActivity(addNoteIntent);
 
         }
 

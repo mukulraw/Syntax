@@ -79,16 +79,16 @@
              android:icon="@drawable/m_garbage"
              android:title="Trash"/>
 
+
+
+         <item
+             android:id="@+id/profile"
+             android:checkable="true"
+             android:icon="@drawable/ic_man_user"
+             android:title="Profile"/>
+
      </group>
 
-    <group
-        android:id="@+id/group_4">
-         <item
-             android:id="@+id/menu_logout"
-             android:checkable="true"
-             android:icon="@drawable/m_logout"
-             android:title="Logout"/>
-   </group>
 
 
 

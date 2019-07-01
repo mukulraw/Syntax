@@ -2,22 +2,31 @@ package com.syntax.note.note;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.syntax.note.R;
 import com.syntax.note.TrashDetails;
+import com.syntax.note.home.HomeActivity;
+import com.syntax.note.multiDeletePOJO.multiDeleteBean;
+import com.syntax.note.signinResponsePOJO.signinResponseBean;
 import com.syntax.note.trashRequestPOJO.Data;
 import com.syntax.note.trashRequestPOJO.TrashRequestBean;
 import com.syntax.note.trashResponsePOJO.Datum;
@@ -46,6 +55,9 @@ public class TrashActivity extends AppCompatActivity {
     List<Datum> list;
     TrashAdapter adapter;
 
+    Button deletebutton , restorebutton;
+
+    List<String> delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +65,7 @@ public class TrashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trash);
 
         list = new ArrayList<>();
+        delete = new ArrayList<>();
 
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -72,6 +85,8 @@ public class TrashActivity extends AppCompatActivity {
         });
 
         progress = findViewById(R.id.progressBar3);
+        deletebutton = findViewById(R.id.button2);
+        restorebutton = findViewById(R.id.button);
         grid = findViewById(R.id.grid);
         manager = new GridLayoutManager(this, 2);
         adapter = new TrashAdapter(this, list);
@@ -94,10 +109,96 @@ public class TrashActivity extends AppCompatActivity {
         trashReq();
 
 
+        deletebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progress.setVisibility(View.VISIBLE);
+                String deletess = TextUtils.join(",", delete);
+
+                Log.d("delete" , deletess);
+
+                multiDeleteBean body = new multiDeleteBean();
+
+
+                com.syntax.note.multiDeletePOJO.Data data = new com.syntax.note.multiDeletePOJO.Data();
+
+                data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
+                data.setNoteId(deletess);
+
+                body.setAction("delete_trash_multiple_note");
+                body.setData(data);
+
+                Call<signinResponseBean> call = serviceInterface.multiDelete(body);
+
+                call.enqueue(new Callback<signinResponseBean>() {
+                    @Override
+                    public void onResponse(Call<signinResponseBean> call, Response<signinResponseBean> response) {
+
+                        Toast.makeText(TrashActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                        progress.setVisibility(View.GONE);
+                        trashReq();
+                    }
+
+                    @Override
+                    public void onFailure(Call<signinResponseBean> call, Throwable t) {
+                        progress.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+        });
+
+        restorebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                progress.setVisibility(View.VISIBLE);
+
+                String deletess = TextUtils.join(",", delete);
+
+                Log.d("delete" , deletess);
+
+                multiDeleteBean body = new multiDeleteBean();
+
+
+                com.syntax.note.multiDeletePOJO.Data data = new com.syntax.note.multiDeletePOJO.Data();
+
+                data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
+                data.setNoteId(deletess);
+
+                body.setAction("recover_multiple_note");
+                body.setData(data);
+
+                Call<signinResponseBean> call = serviceInterface.multiDelete(body);
+
+                call.enqueue(new Callback<signinResponseBean>() {
+                    @Override
+                    public void onResponse(Call<signinResponseBean> call, Response<signinResponseBean> response) {
+
+                        Toast.makeText(TrashActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                        progress.setVisibility(View.GONE);
+                        trashReq();
+                    }
+
+                    @Override
+                    public void onFailure(Call<signinResponseBean> call, Throwable t) {
+                        progress.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+        });
+
     }
 
     private void trashReq() {
 
+        delete.clear();
+
+        deletebutton.setVisibility(View.GONE);
+        restorebutton.setVisibility(View.GONE);
 
         progress.setVisibility(View.VISIBLE);
 
@@ -177,6 +278,40 @@ public class TrashActivity extends AppCompatActivity {
 
             holder.title.setText(item.getTitle());
             holder.note.setText(item.getDesc());
+            holder.date.setText(item.getCreateDate());
+
+            holder.check.setChecked(item.getCheck());
+
+            holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                    if (b) {
+                        delete.add(item.getId());
+                        item.setCheck(true);
+                        if (delete.size() > 0) {
+                            deletebutton.setVisibility(View.VISIBLE);
+                            restorebutton.setVisibility(View.VISIBLE);
+                        } else {
+                            deletebutton.setVisibility(View.GONE);
+                            restorebutton.setVisibility(View.GONE);
+                        }
+                    } else {
+                        delete.remove(item.getId());
+                        item.setCheck(false);
+
+                        if (delete.size() > 0) {
+                            deletebutton.setVisibility(View.VISIBLE);
+                            restorebutton.setVisibility(View.VISIBLE);
+                        } else {
+                            deletebutton.setVisibility(View.GONE);
+                            restorebutton.setVisibility(View.GONE);
+                        }
+
+                    }
+
+                }
+            });
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -185,6 +320,7 @@ public class TrashActivity extends AppCompatActivity {
                     intent.putExtra("note" , item.getDesc());
                     intent.putExtra("id" , item.getId());
                     intent.putExtra("title" , item.getTitle());
+                    intent.putExtra("cat" , item.getCatName());
                     context.startActivity(intent);
                 }
             });
@@ -197,13 +333,16 @@ public class TrashActivity extends AppCompatActivity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            TextView title, note;
+            TextView title, note , date;
+            CheckBox check;
 
             ViewHolder(View itemView) {
                 super(itemView);
 
                 title = itemView.findViewById(R.id.textView7);
                 note = itemView.findViewById(R.id.textView8);
+                date = itemView.findViewById(R.id.textView9);
+                check = itemView.findViewById(R.id.checkBox);
 
             }
         }
