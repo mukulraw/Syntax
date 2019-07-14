@@ -55,7 +55,7 @@ public class TrashActivity extends AppCompatActivity {
     List<Datum> list;
     TrashAdapter adapter;
 
-    Button deletebutton , restorebutton;
+    Button deletebutton , restorebutton , cancel;
 
     List<String> delete;
 
@@ -86,6 +86,7 @@ public class TrashActivity extends AppCompatActivity {
 
         progress = findViewById(R.id.progressBar3);
         deletebutton = findViewById(R.id.button2);
+        cancel = findViewById(R.id.button3);
         restorebutton = findViewById(R.id.button);
         grid = findViewById(R.id.grid);
         manager = new GridLayoutManager(this, 2);
@@ -108,6 +109,15 @@ public class TrashActivity extends AppCompatActivity {
 
         trashReq();
 
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                trashReq();
+
+            }
+        });
 
         deletebutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,6 +209,7 @@ public class TrashActivity extends AppCompatActivity {
 
         deletebutton.setVisibility(View.GONE);
         restorebutton.setVisibility(View.GONE);
+        cancel.setVisibility(View.GONE);
 
         progress.setVisibility(View.VISIBLE);
 
@@ -292,9 +303,11 @@ public class TrashActivity extends AppCompatActivity {
                         if (delete.size() > 0) {
                             deletebutton.setVisibility(View.VISIBLE);
                             restorebutton.setVisibility(View.VISIBLE);
+                            cancel.setVisibility(View.VISIBLE);
                         } else {
                             deletebutton.setVisibility(View.GONE);
                             restorebutton.setVisibility(View.GONE);
+                            cancel.setVisibility(View.GONE);
                         }
                     } else {
                         delete.remove(item.getId());
@@ -303,9 +316,11 @@ public class TrashActivity extends AppCompatActivity {
                         if (delete.size() > 0) {
                             deletebutton.setVisibility(View.VISIBLE);
                             restorebutton.setVisibility(View.VISIBLE);
+                            cancel.setVisibility(View.VISIBLE);
                         } else {
                             deletebutton.setVisibility(View.GONE);
                             restorebutton.setVisibility(View.GONE);
+                            cancel.setVisibility(View.GONE);
                         }
 
                     }

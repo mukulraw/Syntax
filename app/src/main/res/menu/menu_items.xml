@@ -87,6 +87,12 @@
              android:icon="@drawable/ic_man_user"
              android:title="Profile"/>
 
+         <item
+             android:id="@+id/menu_logout"
+             android:checkable="true"
+             android:icon="@drawable/m_logout"
+             android:title="Log Out"/>
+
      </group>
 
 

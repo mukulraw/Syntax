@@ -1,6 +1,7 @@
 package com.syntax.note.home;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -29,6 +31,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -39,6 +46,7 @@ import com.syntax.note.SingleNote;
 import com.syntax.note.allNoteResponsePOJO.Datum;
 import com.syntax.note.allNoteResponsePOJO.NoteList;
 import com.syntax.note.allNoteResponsePOJO.allNoteResponseBean;
+import com.syntax.note.login.SigninActivity;
 import com.syntax.note.multiDeletePOJO.multiDeleteBean;
 import com.syntax.note.note.AddNoteActivity;
 import com.syntax.note.note.TrashActivity;
@@ -73,9 +81,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     List<Datum> list;
     HomeAdapter adapter;
 
-    Button deleteButton;
+    String layout;
 
+    Button deleteButton, calcel;
 
+    GoogleSignInClient mGoogleSignInClient;
+
+    Menu menu;
 
     List<String> delete;
 
@@ -84,9 +96,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        layout = SharePreferenceUtils.getInstance().getString("layout");
+
         list = new ArrayList<>();
         delete = new ArrayList<>();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
 
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         // Toolbar
         Toolbar mToolbar = findViewById(R.id.toolbar);
         mToolbar.setTitle(" Note");
@@ -112,11 +131,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         grid = findViewById(R.id.grid);
         swipe = findViewById(R.id.swipe);
         deleteButton = findViewById(R.id.delete);
-        adapter = new HomeAdapter(this, list);
-        manager = new GridLayoutManager(this, 1);
-        grid.setAdapter(adapter);
-        grid.setLayoutManager(manager);
-
+        calcel = findViewById(R.id.cancel);
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.BASE_URL)
@@ -136,6 +151,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        calcel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                loadData();
+
+            }
+        });
+
 
         swipe.setColorSchemeResources(R.color.colorAccent);
 
@@ -147,7 +171,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 String deletess = TextUtils.join(",", delete);
 
-                Log.d("delete" , deletess);
+                Log.d("delete", deletess);
 
                 multiDeleteBean body = new multiDeleteBean();
 
@@ -180,7 +204,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 });
 
 
-
             }
         });
 
@@ -211,6 +234,54 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent addNoteIntent = new Intent(HomeActivity.this, AddNoteActivity.class);
                 startActivity(addNoteIntent);
                 break;
+            case R.id.menu_logout:
+                final Dialog dialog = new Dialog(HomeActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(false);
+                dialog.setContentView(R.layout.quit_dialog_layout);
+                dialog.show();
+
+                Button ookk = dialog.findViewById(R.id.button2);
+                Button canc = dialog.findViewById(R.id.button4);
+
+                canc.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                ookk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        try {
+
+                            mGoogleSignInClient.signOut()
+                                    .addOnCompleteListener(HomeActivity.this, new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                        }
+                                    });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        SharePreferenceUtils.getInstance().deletePref();
+                        Intent intent = new Intent(HomeActivity.this, SigninActivity.class);
+                        startActivity(intent);
+                        finishAffinity();
+
+                    }
+                });
+
+                break;
+            case R.id.profile:
+                Intent signIntent = new Intent(HomeActivity.this, Profile.class);
+                startActivity(signIntent);
+                break;
             case R.id.menu_trash:
                /* SharePreferenceUtils.getInstance().deletePref();
                 Intent signIntent = new Intent(HomeActivity.this, SigninActivity.class);
@@ -219,10 +290,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 Intent trashIntent = new Intent(HomeActivity.this, TrashActivity.class);
                 startActivity(trashIntent);
-                break;
-            case R.id.profile:
-                Intent signIntent = new Intent(HomeActivity.this, Profile.class);
-                startActivity(signIntent);
                 break;
         }
 
@@ -250,6 +317,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void loadData() {
 
         deleteButton.setVisibility(View.GONE);
+        calcel.setVisibility(View.GONE);
 
         swipe.setRefreshing(true);
 
@@ -276,8 +344,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onResponse(Call<allNoteResponseBean> call, Response<allNoteResponseBean> response) {
 
-
-                adapter.setGridData(response.body().getData());
+                adapter = new HomeAdapter(HomeActivity.this, response.body().getData());
+                manager = new GridLayoutManager(HomeActivity.this, 1);
+                grid.setAdapter(adapter);
+                grid.setLayoutManager(manager);
+                //adapter.setGridData(response.body().getData());
 
                 swipe.setRefreshing(false);
 
@@ -363,7 +434,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 title = itemView.findViewById(R.id.textView4);
                 grid = itemView.findViewById(R.id.grid);
 
-                manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                if (layout.equals("list")) {
+                    manager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+                } else {
+                    manager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
+                }
+
                 adapter2 = new HomeAdapter2(context, list);
                 grid.setAdapter(adapter2);
                 grid.setLayoutManager(manager);
@@ -392,7 +468,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.home_list_item2, parent, false);
+
+            View view;
+
+            if (layout.equals("list")) {
+                view = inflater.inflate(R.layout.home_list_item3, parent, false);
+            } else {
+                view = inflater.inflate(R.layout.home_list_item2, parent, false);
+            }
+
             return new ViewHolder(view);
         }
 
@@ -416,8 +500,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         item.setCheck(true);
                         if (delete.size() > 0) {
                             deleteButton.setVisibility(View.VISIBLE);
+                            calcel.setVisibility(View.VISIBLE);
                         } else {
                             deleteButton.setVisibility(View.GONE);
+                            calcel.setVisibility(View.GONE);
                         }
                     } else {
                         delete.remove(item.getId());
@@ -425,8 +511,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                         if (delete.size() > 0) {
                             deleteButton.setVisibility(View.VISIBLE);
+                            calcel.setVisibility(View.VISIBLE);
                         } else {
                             deleteButton.setVisibility(View.GONE);
+                            calcel.setVisibility(View.GONE);
                         }
 
                     }
@@ -461,7 +549,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             TextView title, note, date;
             CheckBox check;
 
-            public ViewHolder(View itemView) {
+            ViewHolder(View itemView) {
                 super(itemView);
 
                 title = itemView.findViewById(R.id.textView5);
@@ -477,8 +565,31 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+
+        if (layout.equals("list"))
+        {
+            MenuItem ll = menu.findItem(R.id.list);
+            ll.setVisible(false);
+
+            MenuItem gg = menu.findItem(R.id.grid);
+            gg.setVisible(true);
+        }
+        else
+        {
+            MenuItem ll = menu.findItem(R.id.list);
+            ll.setVisible(true);
+
+            MenuItem gg = menu.findItem(R.id.grid);
+            gg.setVisible(false);
+        }
+
+
+
+
         return true;
     }
 
@@ -496,6 +607,32 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             Intent addNoteIntent = new Intent(HomeActivity.this, AddNoteActivity.class);
             startActivity(addNoteIntent);
+
+        } else if (id == R.id.list) {
+
+            MenuItem ll = menu.findItem(R.id.list);
+            ll.setVisible(false);
+
+            MenuItem gg = menu.findItem(R.id.grid);
+            gg.setVisible(true);
+
+            layout = "list";
+
+            SharePreferenceUtils.getInstance().saveString("layout" , "list");
+
+            loadData();
+
+        } else if (id == R.id.grid) {
+            MenuItem ll = menu.findItem(R.id.list);
+            ll.setVisible(true);
+
+            MenuItem gg = menu.findItem(R.id.grid);
+            gg.setVisible(false);
+            layout = "grid";
+
+            SharePreferenceUtils.getInstance().saveString("layout" , "grid");
+
+            loadData();
 
         }
 

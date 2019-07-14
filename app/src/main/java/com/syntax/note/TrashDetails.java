@@ -30,7 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class TrashDetails extends AppCompatActivity {
 
     Toolbar toolbar;
-    EditText note , title , cat;
+    TextView note , title , cat;
     ProgressBar progress;
 
     String id;

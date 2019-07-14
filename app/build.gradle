@@ -1,14 +1,23 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('C:\\Users\\mukul\\Downloads\\note.jks')
+            storePassword '123456'
+            keyAlias = 'note'
+            keyPassword '123456'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.syntax.note"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.9"
+        versionCode 12
+        versionName "20"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
