@@ -2,9 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.syntax.note">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -14,7 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme2"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ChangePassword"></activity>
+        <activity android:name=".HomeActivity2"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ChangePassword" />
         <activity android:name=".Profile" />
         <activity
             android:name=".splash.SplashActivity"
@@ -47,5 +46,8 @@
         <activity android:name=".Search" />
         <activity android:name=".TrashDetails" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
