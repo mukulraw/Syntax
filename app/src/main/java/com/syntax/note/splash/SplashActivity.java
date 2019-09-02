@@ -4,6 +4,7 @@ import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.syntax.note.HomeActivity2;
 import com.syntax.note.R;
 import com.syntax.note.home.HomeActivity;
 import com.syntax.note.login.SigninActivity;
@@ -31,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
                         finish();
                     }else {
                         // home sscreen
-                        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(SplashActivity.this, HomeActivity2.class);
                         startActivity(intent);
                         finish();
                     }

@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.syntax.note.HomeActivity2;
 import com.syntax.note.R;
 import com.syntax.note.home.HomeActivity;
 import com.syntax.note.signinRequestPOJO.signinRequestBean;
@@ -188,7 +189,7 @@ public class SigninActivity extends AppCompatActivity {
                         SharePreferenceUtils.getInstance().saveString(Constant.USER_email,response.body().getData().getEmail());
                         SharePreferenceUtils.getInstance().saveString(Constant.USER_name,response.body().getData().getName());
                         SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
-                        Intent homeIntent = new Intent(SigninActivity.this,HomeActivity.class);
+                        Intent homeIntent = new Intent(SigninActivity.this, HomeActivity2.class);
                         startActivity(homeIntent);
                         finish();
                     }
@@ -244,7 +245,7 @@ public class SigninActivity extends AppCompatActivity {
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_email,response.body().getData().getEmail());
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_name,response.body().getData().getName());
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
-                    Intent homeIntent = new Intent(SigninActivity.this,HomeActivity.class);
+                    Intent homeIntent = new Intent(SigninActivity.this,HomeActivity2.class);
                     startActivity(homeIntent);
                     finish();
                 }

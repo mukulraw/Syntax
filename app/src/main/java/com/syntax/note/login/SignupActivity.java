@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.syntax.note.HomeActivity2;
 import com.syntax.note.R;
 import com.syntax.note.home.HomeActivity;
 import com.syntax.note.signupRequestPOJO.Data;
@@ -124,7 +125,7 @@ public class SignupActivity extends AppCompatActivity {
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_email,response.body().getData().getEmail());
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_name,response.body().getData().getName());
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
-                    Intent homeIntent = new Intent(SignupActivity.this,HomeActivity.class);
+                    Intent homeIntent = new Intent(SignupActivity.this, HomeActivity2.class);
                     startActivity(homeIntent);
                     finish();
 
