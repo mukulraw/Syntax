@@ -6,7 +6,7 @@
     android:layout_width="150dp"
     android:layout_height="170dp"
     app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="#ffffcf"
+    app:cardBackgroundColor="#EEF3FF"
     app:cardCornerRadius="3dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,8 +53,6 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="8dp"
             android:text="TextView"
-            android:linksClickable="true"
-            android:autoLink="web|email"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/checkBox"
             app:layout_constraintEnd_toEndOf="parent"

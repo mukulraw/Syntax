@@ -117,7 +117,7 @@ public class SigninActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent signupIntent = new Intent(SigninActivity.this,SignupActivity.class);
                 startActivity(signupIntent);
-                finish();
+                //finish();
             }
         });
 

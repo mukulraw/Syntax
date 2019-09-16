@@ -303,7 +303,7 @@ public class Home extends Fragment {
                 title = itemView.findViewById(R.id.textView4);
                 grid = itemView.findViewById(R.id.grid);
 
-                if (layout.equals("list")) {
+                if (!layout.equals("grid")) {
                     manager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
                 } else {
                     manager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
@@ -340,7 +340,7 @@ public class Home extends Fragment {
 
             View view;
 
-            if (layout.equals("list")) {
+            if (!layout.equals("grid")) {
                 view = inflater.inflate(R.layout.home_list_item3, parent, false);
             } else {
                 view = inflater.inflate(R.layout.home_list_item2, parent, false);
@@ -397,7 +397,7 @@ public class Home extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, SingleNote.class);
+                    Intent intent = new Intent(context, NoteDetails.class);
                     intent.putExtra("note", item.getDesc());
                     intent.putExtra("id", item.getId());
                     intent.putExtra("catid", item.getCatId());

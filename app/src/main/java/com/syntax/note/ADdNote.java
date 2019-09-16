@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -45,7 +46,7 @@ public class ADdNote extends Fragment {
     private ArrayList<String> catName = new ArrayList<>();
     private ServiceInterface serviceInterface;
     private EditText title, desc;
-    private Button submit;
+    private ImageButton submit;
     private String mTitle, mDesc, mCatId;
     private String mUserId;
     private ConstraintLayout rootlayout;

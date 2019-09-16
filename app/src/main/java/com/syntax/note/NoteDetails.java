@@ -1,20 +1,21 @@
 package com.syntax.note;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.content.Intent;
 import android.graphics.Color;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.syntax.note.allNoteResponsePOJO.allNoteResponseBean;
@@ -22,7 +23,6 @@ import com.syntax.note.categoryRequestPOJO.CategoryRequestBean;
 import com.syntax.note.categoryResponsePOJO.CategoryResponseBean;
 import com.syntax.note.deleteNoteRequestPOJO.Data;
 import com.syntax.note.deleteNoteRequestPOJO.deleteNoteRequestBean;
-import com.syntax.note.note.AddNoteActivity;
 import com.syntax.note.searchResultPOJO.searchResultBean;
 import com.syntax.note.updateNoteRequestPOJO.updateNoteRequestBean;
 import com.syntax.note.utility.Constant;
@@ -37,10 +37,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SingleNote extends AppCompatActivity {
+public class NoteDetails extends AppCompatActivity {
 
     Toolbar toolbar;
-    EditText note , title;
+    EditText title;
+    TextView note;
     ProgressBar progress;
     ImageButton update;
     String id;
@@ -55,7 +56,7 @@ public class SingleNote extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_single_note);
+        setContentView(R.layout.activity_note_details);
 
         catId = new ArrayList<>();
         catName = new ArrayList<>();
@@ -97,55 +98,13 @@ public class SingleNote extends AppCompatActivity {
             public void onClick(View view) {
 
 
-                String n = note.getText().toString();
-
-                if (n.length() > 0) {
-
-                    progress.setVisibility(View.VISIBLE);
-
-                    updateNoteRequestBean body = new updateNoteRequestBean();
-
-                    body.setAction("edit_note");
-                    com.syntax.note.updateNoteRequestPOJO.Data data = new com.syntax.note.updateNoteRequestPOJO.Data();
-
-                    data.setCatId(cat);
-                    data.setDescription(n);
-                    data.setNoteId(id);
-                    data.setTitle(title.getText().toString());
-                    data.setUserId(SharePreferenceUtils.getInstance().getString(Constant.USER_id));
-                    body.setData(data);
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Constant.BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-
-
-                    ServiceInterface serviceInterface = retrofit.create(ServiceInterface.class);
-
-                    Call<searchResultBean> call = serviceInterface.update(body);
-
-                    call.enqueue(new Callback<searchResultBean>() {
-                        @Override
-                        public void onResponse(Call<searchResultBean> call, Response<searchResultBean> response) {
-
-                            if (response.body().getStatus().equals("1"))
-                            {
-                                Toast.makeText(SingleNote.this , response.body().getMessage() , Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-
-                            progress.setVisibility(View.GONE);
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<searchResultBean> call, Throwable t) {
-                            progress.setVisibility(View.GONE);
-                        }
-                    });
-
-
-                }
+                Intent intent = new Intent(NoteDetails.this, SingleNote.class);
+                intent.putExtra("note",getIntent().getStringExtra("note"));
+                intent.putExtra("id", id);
+                intent.putExtra("catid", cat1);
+                intent.putExtra("title", getIntent().getStringExtra("title"));
+                startActivity(intent);
+                finish();
 
 
             }
@@ -169,6 +128,7 @@ public class SingleNote extends AppCompatActivity {
         });
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -225,7 +185,7 @@ public class SingleNote extends AppCompatActivity {
             public void onResponse(Call<allNoteResponseBean> call, Response<allNoteResponseBean> response) {
 
                 if (response.body().getStatus().equals("1")) {
-                    Toast.makeText(SingleNote.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NoteDetails.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     finish();
                 }
 
@@ -268,7 +228,7 @@ public class SingleNote extends AppCompatActivity {
                         catName.add(response.body().getData().get(i).getCatName());
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(SingleNote.this,
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(NoteDetails.this,
                             android.R.layout.simple_spinner_item, catName);//setting the country_array to spinner
                     // string value
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -291,7 +251,7 @@ public class SingleNote extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<CategoryResponseBean> call, Throwable t) {
-                Toast.makeText(SingleNote.this, "api response fail" + t, Toast.LENGTH_SHORT).show();
+                Toast.makeText(NoteDetails.this, "api response fail" + t, Toast.LENGTH_SHORT).show();
             }
         });
 

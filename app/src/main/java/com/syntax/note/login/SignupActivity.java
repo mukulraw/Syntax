@@ -127,7 +127,7 @@ public class SignupActivity extends AppCompatActivity {
                     SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
                     Intent homeIntent = new Intent(SignupActivity.this, HomeActivity2.class);
                     startActivity(homeIntent);
-                    finish();
+                    finishAffinity();
 
                    /* Intent signinIntent = new Intent(SignupActivity.this,SigninActivity.class);
                     startActivity(signinIntent);*/

@@ -73,7 +73,7 @@ public class Trash extends Fragment {
         cancel = view.findViewById(R.id.button3);
         restorebutton = view.findViewById(R.id.button);
         grid = view.findViewById(R.id.grid);
-        manager = new GridLayoutManager(getContext(), 2);
+        manager = new GridLayoutManager(getContext(), 1);
         adapter = new TrashAdapter(getContext(), list);
 
         grid.setLayoutManager(manager);
@@ -339,8 +339,8 @@ public class Trash extends Fragment {
             ViewHolder(View itemView) {
                 super(itemView);
 
-                title = itemView.findViewById(R.id.textView7);
-                note = itemView.findViewById(R.id.textView8);
+                title = itemView.findViewById(R.id.textView5);
+                note = itemView.findViewById(R.id.textView6);
                 date = itemView.findViewById(R.id.textView9);
                 check = itemView.findViewById(R.id.checkBox);
 

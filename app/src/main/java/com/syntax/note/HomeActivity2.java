@@ -46,7 +46,7 @@ public class HomeActivity2 extends AppCompatActivity {
         bottom.setAccentColor(Color.parseColor("#6495ED"));
 
         bottom.setElevation(2);
-        bottom.setDefaultBackgroundColor(Color.parseColor("#f5f5f5"));
+        bottom.setDefaultBackgroundColor(Color.parseColor("#f2f2f2"));
 
         bottom.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
