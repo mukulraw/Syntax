@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -92,6 +93,16 @@ public class Prof extends Fragment {
 
                                         }
                                     });
+
+                        }catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+
+
+                        try {
+
+                            LoginManager.getInstance().logOut();
 
                         }catch (Exception e)
                         {

@@ -2,6 +2,13 @@ package com.syntax.note.login;
 
 import android.content.Intent;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -33,6 +40,11 @@ import com.syntax.note.utility.Constant;
 import com.syntax.note.utility.SharePreferenceUtils;
 import com.syntax.note.webServices.ServiceInterface;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,7 +57,7 @@ public class SigninActivity extends AppCompatActivity {
     Button syntaxSigninBtn;
     String syntax_email,syntax_password;
     RelativeLayout rootlayout;
-
+    private CallbackManager mCallbackManager;
     TextView forgotPassword,signupNow;
 
 
@@ -62,6 +74,26 @@ public class SigninActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCallbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+
+                facebooklogin(loginResult);
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(SigninActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Toast.makeText(SigninActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
         setContentView(R.layout.activity_signin);
 
         setUpWidget();
@@ -132,11 +164,21 @@ public class SigninActivity extends AppCompatActivity {
             }
         });
 
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                LoginManager.getInstance().logInWithReadPermissions(SigninActivity.this, Arrays.asList("public_profile"));
+
+            }
+        });
+
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
@@ -267,6 +309,104 @@ public class SigninActivity extends AppCompatActivity {
 
             }
         });
+
+
+    }
+
+
+    public void facebooklogin(final LoginResult loginResult) {
+
+        Log.d("Success", "Login");
+        GraphRequest request = GraphRequest.newMeRequest(
+                loginResult.getAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.i("MainActivity", "@@@response: " + response.toString());
+                        String email;
+
+                        try {
+
+                            final String name = object.getString("name");
+                            final String id = object.getString("id");
+                            if (object.has("email")) {
+                                email = object.getString("email");
+                            } else {
+                                email = id;
+
+
+                            }
+
+                            Log.d("email" , email);
+                            Log.d("pid" , id);
+
+                            pBar.setVisibility(View.VISIBLE);
+
+                            socialRequestBean body = new socialRequestBean();
+                            body.setAction("social_login");
+                            com.syntax.note.socialRequestPOJO.Data data = new com.syntax.note.socialRequestPOJO.Data();
+
+                            data.setEmail(email);
+                            data.setPid(id);
+                            body.setData(data);
+
+
+                            Call<signinResponseBean> call = serviceInterface.socialsignin(body);
+
+
+                            call.enqueue(new Callback<signinResponseBean>() {
+                                @Override
+                                public void onResponse(Call<signinResponseBean> call, Response<signinResponseBean> response) {
+
+                                    if (response.body().getStatus().equals("1"))
+                                    {
+                                        pBar.setVisibility(View.GONE);
+                                        // Toast.makeText(SigninActivity.this, ""+response.body()
+                                        //  .getData().getName(), Toast.LENGTH_SHORT).show();
+                                        Log.i("signin",response.body().getData().getEmail());
+                                        SharePreferenceUtils.getInstance().saveString(Constant.USER_id,response.body().getData().getUserId());
+                                        SharePreferenceUtils.getInstance().saveString(Constant.USER_email,response.body().getData().getEmail());
+                                        SharePreferenceUtils.getInstance().saveString(Constant.USER_name,response.body().getData().getName());
+                                        SharePreferenceUtils.getInstance().saveString(Constant.USER_phone,response.body().getData().getMobile());
+                                        Intent homeIntent = new Intent(SigninActivity.this, HomeActivity2.class);
+                                        startActivity(homeIntent);
+                                        finish();
+                                    }
+                                    else
+                                    {
+                                        pBar.setVisibility(View.GONE);
+                                        Snackbar snackbar = Snackbar.make(rootlayout,"Login Failed Check Login Credential",Snackbar.LENGTH_LONG);
+                                        View snackBarView = snackbar.getView();
+                                        snackBarView.setBackgroundColor(getResources().getColor(R.color.seaGreen));
+                                        snackbar.show();
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<signinResponseBean> call, Throwable t) {
+                                    pBar.setVisibility(View.GONE);
+                                }
+                            });
+
+
+
+                            //Toast.makeText(CreateAccount.this, pic, Toast.LENGTH_SHORT).show();
+
+
+                            //socialSignin(name , id , email);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,email"); // id,first_name,last_name,email,gender,birthday,cover,picture.type(large)
+        request.setParameters(parameters);
+        request.executeAsync();
 
 
     }
