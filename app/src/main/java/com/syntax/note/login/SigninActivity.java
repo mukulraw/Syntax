@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.syntax.note.HomeActivity2;
 import com.syntax.note.R;
@@ -46,7 +47,7 @@ public class SigninActivity extends AppCompatActivity {
     RelativeLayout rootlayout;
 
     TextView forgotPassword,signupNow;
-    private TextInputLayout inputLayoutSignin,inputLayoutPassword;
+
 
     Retrofit retrofit;
     ServiceInterface serviceInterface;
@@ -55,7 +56,7 @@ public class SigninActivity extends AppCompatActivity {
 
     GoogleSignInClient mGoogleSignInClient;
 
-    ImageButton google;
+    Button google , facebook;
 
 
     @Override
@@ -278,9 +279,8 @@ public class SigninActivity extends AppCompatActivity {
         forgotPassword = findViewById(R.id.forgotPassword);
         signupNow = findViewById(R.id.signupNow);
         rootlayout = findViewById(R.id.rootlayout);
-        inputLayoutSignin = findViewById(R.id.inputLayoutEmail);
-        inputLayoutPassword = findViewById(R.id.inputLayoutPassword);
         google = findViewById(R.id.google);
+        facebook = findViewById(R.id.facebook);
 
         pBar = findViewById(R.id.progressBar);
     }
@@ -294,17 +294,17 @@ public class SigninActivity extends AppCompatActivity {
         isValid = true;
 
         if (syntaxSigninEmail.getText().toString().isEmpty()) {
-            inputLayoutSignin.setError("Email id Missing");
+            Toast.makeText(this, "Invalid Email", Toast.LENGTH_SHORT).show();
             isValid = false;
         } else {
-            inputLayoutSignin.setErrorEnabled(false);
+
         }
 
         if (syntaxSigninPassword.getText().toString().isEmpty()) {
-            inputLayoutPassword.setError("Password Missing");
+            Toast.makeText(this, "Invalid Password", Toast.LENGTH_SHORT).show();
             isValid = false;
         } else {
-            inputLayoutPassword.setErrorEnabled(false);
+
         }
 
 

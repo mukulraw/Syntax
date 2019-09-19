@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.syntax.note.multiDeletePOJO.multiDeleteBean;
 import com.syntax.note.note.TrashActivity;
@@ -54,11 +55,16 @@ public class Trash extends Fragment {
     RecyclerView grid;
     GridLayoutManager manager;
     List<Datum> list;
+    List<Datum> clist;
     TrashAdapter adapter;
 
     Button deletebutton , restorebutton , cancel;
 
     List<String> delete;
+
+    FloatingActionButton check1;
+
+    boolean all = false;
 
     @Nullable
     @Override
@@ -66,6 +72,7 @@ public class Trash extends Fragment {
         View view = inflater.inflate(R.layout.activity_trash , container , false);
 
         list = new ArrayList<>();
+        clist = new ArrayList<>();
         delete = new ArrayList<>();
 
         progress = view.findViewById(R.id.progressBar3);
@@ -73,6 +80,7 @@ public class Trash extends Fragment {
         cancel = view.findViewById(R.id.button3);
         restorebutton = view.findViewById(R.id.button);
         grid = view.findViewById(R.id.grid);
+        check1 = view.findViewById(R.id.check);
         manager = new GridLayoutManager(getContext(), 1);
         adapter = new TrashAdapter(getContext(), list);
 
@@ -143,6 +151,40 @@ public class Trash extends Fragment {
             }
         });
 
+        check1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!all)
+                {
+
+
+                    List<Datum> llll = new ArrayList<>();
+
+                    for (int i = 0; i < clist.size(); i++) {
+
+                        Datum item = clist.get(i);
+
+                        item.setCheck(true);
+
+                        llll.add(item);
+
+                    }
+
+                    adapter.setGridData(llll);
+
+                    all = true;
+
+
+                }
+                else
+                {
+                    trashReq();
+                }
+
+            }
+        });
+
         restorebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -191,7 +233,9 @@ public class Trash extends Fragment {
     private void trashReq() {
 
         delete.clear();
+        check1.setVisibility(View.GONE);
 
+        all = false;
         deletebutton.setVisibility(View.GONE);
         restorebutton.setVisibility(View.GONE);
         cancel.setVisibility(View.GONE);
@@ -220,6 +264,8 @@ public class Trash extends Fragment {
 
 
                     if (response.body().getStatus().equals("1")) {
+
+                        clist = response.body().getData();
 
                         adapter.setGridData(response.body().getData());
 
@@ -278,6 +324,15 @@ public class Trash extends Fragment {
 
             holder.check.setChecked(item.getCheck());
 
+            if (item.getCheck())
+            {
+                delete.add(item.getId());
+            }
+            else
+            {
+
+            }
+
             holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -289,10 +344,12 @@ public class Trash extends Fragment {
                             deletebutton.setVisibility(View.VISIBLE);
                             restorebutton.setVisibility(View.VISIBLE);
                             cancel.setVisibility(View.VISIBLE);
+                            check1.setVisibility(View.VISIBLE);
                         } else {
                             deletebutton.setVisibility(View.GONE);
                             restorebutton.setVisibility(View.GONE);
                             cancel.setVisibility(View.GONE);
+                            check1.setVisibility(View.GONE);
                         }
                     } else {
                         delete.remove(item.getId());
@@ -302,10 +359,12 @@ public class Trash extends Fragment {
                             deletebutton.setVisibility(View.VISIBLE);
                             restorebutton.setVisibility(View.VISIBLE);
                             cancel.setVisibility(View.VISIBLE);
+                            check1.setVisibility(View.VISIBLE);
                         } else {
                             deletebutton.setVisibility(View.GONE);
                             restorebutton.setVisibility(View.GONE);
                             cancel.setVisibility(View.GONE);
+                            check1.setVisibility(View.GONE);
                         }
 
                     }

@@ -39,32 +39,39 @@
                 android:layout_gravity="center"
                  />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputLayoutEmail"
-                android:layout_marginTop="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Email"
+                />
+
+
                 <EditText
                     android:id="@+id/signin_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/back_roung"
+                    android:layout_marginTop="8dp"
+                    android:padding="10dp"
                     android:inputType="textEmailAddress"
-                    android:hint="Enter Email id"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="tap to enter"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputLayoutPassword"
-                android:layout_marginTop="20dp"
-                app:passwordToggleEnabled="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Your Password"
+                />
+
                 <EditText
                     android:id="@+id/signin_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter password"
+                    android:hint="tap to enter"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/back_roung"
+                    android:padding="10dp"
                     android:inputType="textPassword"/>
-            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/signin_button"
@@ -81,18 +88,61 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="OR"
-                android:padding="10dp"
+                android:padding="18dp"
                 android:layout_gravity="center_horizontal"
                 />
 
-            <ImageButton
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:id="@+id/google"
-                android:background="@drawable/ic_google_plus"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                >
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/google"
+                    android:text="Google  Login"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/white_back_round"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:paddingStart="10dp"
+                    android:layout_marginStart="1dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:drawableStart="@drawable/ic_search"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/facebook"
+                    android:layout_marginStart="4dp"
+                    android:text="Facebook  Login"
+                    android:layout_marginEnd="1dp"
+                    android:background="@drawable/white_back_round"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:drawableStart="@drawable/ic_facebook"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    />
+
+            </LinearLayout>
+
+
+
 
 
             <TextView

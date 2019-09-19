@@ -16,6 +16,9 @@ public class Data {
     @SerializedName("password")
     @Expose
     private String password;
+    @SerializedName("tzone")
+    @Expose
+    private String tzone;
 
     public String getName() {
         return name;
@@ -47,5 +50,13 @@ public class Data {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getTzone() {
+        return tzone;
+    }
+
+    public void setTzone(String tzone) {
+        this.tzone = tzone;
     }
 }

@@ -30,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.syntax.note.allNoteResponsePOJO.Datum;
 import com.syntax.note.allNoteResponsePOJO.NoteList;
@@ -75,6 +76,12 @@ public class Home extends Fragment {
 
     List<String> delete;
 
+    FloatingActionButton check1;
+
+    List<Datum> clist;
+
+    boolean all = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -83,6 +90,7 @@ public class Home extends Fragment {
         layout = SharePreferenceUtils.getInstance().getString("layout");
 
         list = new ArrayList<>();
+        clist = new ArrayList<>();
         delete = new ArrayList<>();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -95,6 +103,7 @@ public class Home extends Fragment {
         swipe = view.findViewById(R.id.swipe);
         deleteButton = view.findViewById(R.id.delete);
         calcel = view.findViewById(R.id.cancel);
+        check1 = view.findViewById(R.id.check);
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.BASE_URL)
@@ -170,6 +179,64 @@ public class Home extends Fragment {
             }
         });
 
+        check1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!all)
+                {
+
+                    HomeAdapter3 adapter3 = new HomeAdapter3(getContext(), clist);
+                    manager = new GridLayoutManager(getContext(), 1);
+                    grid.setAdapter(adapter3);
+                    grid.setLayoutManager(manager);
+
+                    /*List<Datum> tlist = new ArrayList<>();
+
+                    for (int i = 0 ; i < clist.size() ; i++) {
+
+                        Datum it = clist.get(i);
+
+                        List<NoteList> nnll = new ArrayList<>();
+
+                        for(int j = 0 ; j < clist.get(i).getNoteList().size() ; j++)
+                        {
+
+                            NoteList n = new NoteList();
+                            n.setCatId(it.getNoteList().get(j).getCatId());
+                            n.setCatName(it.getNoteList().get(j).getCatName());
+                            n.setCreateDate(it.getNoteList().get(j).getCreateDate());
+                            n.setDesc(it.getNoteList().get(j).getDesc());
+                            n.setId(it.getNoteList().get(j).getId());
+                            n.setTitle(it.getNoteList().get(j).getTitle());
+                            n.setCheck(true);
+
+                            nnll.add(n);
+
+                        }
+
+                        it.setNoteList(nnll);
+
+                        tlist.add(it);*/
+
+
+
+
+                   // adapter.setGridData(tlist);
+
+                    all = true;
+
+
+                }
+                else
+                {
+
+                    loadData();
+                }
+
+            }
+        });
+
         loadData();
 
         return view;
@@ -187,6 +254,9 @@ public class Home extends Fragment {
 
         deleteButton.setVisibility(View.GONE);
         calcel.setVisibility(View.GONE);
+        check1.setVisibility(View.GONE);
+
+        all = false;
 
         swipe.setRefreshing(true);
 
@@ -212,6 +282,10 @@ public class Home extends Fragment {
         call.enqueue(new Callback<allNoteResponseBean>() {
             @Override
             public void onResponse(Call<allNoteResponseBean> call, Response<allNoteResponseBean> response) {
+
+                clist.clear();
+
+                clist = response.body().getData();
 
                 adapter = new HomeAdapter(getContext(), response.body().getData());
                 manager = new GridLayoutManager(getContext(), 1);
@@ -260,7 +334,7 @@ public class Home extends Fragment {
 
             Datum item = list.get(position);
 
-            holder.title.setText(item.getCatName());
+            holder.title.setText(item.getCatName() + "  (" + item.getCount() + ")");
 
             List<NoteList> ll = new ArrayList<>();
 
@@ -274,6 +348,93 @@ public class Home extends Fragment {
                 n.setId(item.getNoteList().get(i).getId());
                 n.setTitle(item.getNoteList().get(i).getTitle());
                 n.setCheck(false);
+
+                ll.add(n);
+
+            }
+
+            holder.adapter2.setGridData(ll);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+
+            TextView title;
+            RecyclerView grid;
+            LinearLayoutManager manager;
+            HomeAdapter2 adapter2;
+            List<NoteList> list;
+
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                list = new ArrayList<>();
+                title = itemView.findViewById(R.id.textView4);
+                grid = itemView.findViewById(R.id.grid);
+
+                if (!layout.equals("grid")) {
+                    manager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+                } else {
+                    manager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
+                }
+
+                adapter2 = new HomeAdapter2(context, list);
+                grid.setAdapter(adapter2);
+                grid.setLayoutManager(manager);
+
+            }
+        }
+
+    }
+
+
+    class HomeAdapter3 extends RecyclerView.Adapter<HomeAdapter3.ViewHolder> {
+
+        Context context;
+        List<Datum> list;
+
+        HomeAdapter3(Context context, List<Datum> list) {
+            this.context = context;
+            this.list = list;
+        }
+
+        void setGridData(List<Datum> list) {
+            this.list = list;
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.home_list_item1, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+            Datum item = list.get(position);
+
+            holder.title.setText(item.getCatName() + "  (" + item.getCount() + ")");
+
+            List<NoteList> ll = new ArrayList<>();
+
+            for (int i = 0; i < item.getNoteList().size(); i++) {
+
+                NoteList n = new NoteList();
+                n.setCatId(item.getNoteList().get(i).getCatId());
+                n.setCatName(item.getNoteList().get(i).getCatName());
+                n.setCreateDate(item.getNoteList().get(i).getCreateDate());
+                n.setDesc(item.getNoteList().get(i).getDesc());
+                n.setId(item.getNoteList().get(i).getId());
+                n.setTitle(item.getNoteList().get(i).getTitle());
+                n.setCheck(true);
 
                 ll.add(n);
 
@@ -359,6 +520,14 @@ public class Home extends Fragment {
 
             holder.check.setChecked(item.getCheck());
 
+            if (item.getCheck())
+            {
+                delete.add(item.getId());
+            }
+            else
+            {
+
+            }
 
             holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -370,9 +539,11 @@ public class Home extends Fragment {
                         if (delete.size() > 0) {
                             deleteButton.setVisibility(View.VISIBLE);
                             calcel.setVisibility(View.VISIBLE);
+                            check1.setVisibility(View.VISIBLE);
                         } else {
                             deleteButton.setVisibility(View.GONE);
                             calcel.setVisibility(View.GONE);
+                            check1.setVisibility(View.GONE);
                         }
                     } else {
                         delete.remove(item.getId());
@@ -381,9 +552,11 @@ public class Home extends Fragment {
                         if (delete.size() > 0) {
                             deleteButton.setVisibility(View.VISIBLE);
                             calcel.setVisibility(View.VISIBLE);
+                            check1.setVisibility(View.VISIBLE);
                         } else {
                             deleteButton.setVisibility(View.GONE);
                             calcel.setVisibility(View.GONE);
+                            check1.setVisibility(View.GONE);
                         }
 
                     }

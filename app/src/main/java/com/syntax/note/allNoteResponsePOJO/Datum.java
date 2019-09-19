@@ -13,6 +13,9 @@ public class Datum {
     @SerializedName("catName")
     @Expose
     private String catName;
+    @SerializedName("count")
+    @Expose
+    private String count;
     @SerializedName("noteList")
     @Expose
     private List<NoteList> noteList = null;
@@ -39,5 +42,13 @@ public class Datum {
 
     public void setNoteList(List<NoteList> noteList) {
         this.noteList = noteList;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
     }
 }
