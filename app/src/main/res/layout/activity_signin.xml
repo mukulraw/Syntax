@@ -79,6 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFF"
+
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/ripple_effect_text"
                 android:text="Sign in"/>
@@ -104,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:id="@+id/google"
-                    android:text="Google  Login"
+                    android:text="Google"
                     android:layout_marginEnd="4dp"
                     android:background="@drawable/white_back_round"
                     android:minHeight="0dp"
@@ -125,7 +126,7 @@
                     android:layout_weight="1"
                     android:id="@+id/facebook"
                     android:layout_marginStart="4dp"
-                    android:text="Facebook  Login"
+                    android:text="Facebook"
                     android:layout_marginEnd="1dp"
                     android:background="@drawable/white_back_round"
                     android:minHeight="0dp"

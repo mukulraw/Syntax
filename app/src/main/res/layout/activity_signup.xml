@@ -172,6 +172,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="16dp"
+
                 android:background="@drawable/ripple_effect_text"
                 android:text="Sign Up"
                 android:textColor="#FFFFFF" />
