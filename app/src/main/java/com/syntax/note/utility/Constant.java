@@ -11,7 +11,7 @@ public class Constant {
     public static final long API_READ_TIMEOUT = 1201;
 
     // public static final String BASE_URL =   "http://beliefitsolution.com/";
-    public static final String BASE_URL =  "http://ec2-13-234-243-41.ap-south-1.compute.amazonaws.com/";
+    public static final String BASE_URL =  "https://www.syntaxnote.com/";
 
     public static final String USER_DATA = "USER_DATA";
     public static final String USER_id = "USER_id";

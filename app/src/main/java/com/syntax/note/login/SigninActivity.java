@@ -321,8 +321,8 @@ public class SigninActivity extends AppCompatActivity {
                 loginResult.getAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.i("MainActivity", "@@@response: " + response.toString());
+                    public void onCompleted(JSONObject object, GraphResponse response1) {
+                        Log.i("MainActivity", "@@@response: " + response1.toString());
                         String email;
 
                         try {
@@ -387,6 +387,7 @@ public class SigninActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(Call<signinResponseBean> call, Throwable t) {
                                     pBar.setVisibility(View.GONE);
+                                    Log.d("error" , t.toString());
                                 }
                             });
 
